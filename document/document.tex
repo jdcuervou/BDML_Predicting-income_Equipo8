@@ -461,6 +461,69 @@ El bootstrap confirma que la mayoría de los coeficientes son \textbf{estables y
 \section{Predicción de Ingresos}
 [Modelos predictivos y validación]
 
+\section{Metodología}
+Para la predicción de ingresos, se dividió la muestra en:
+\begin{itemize}
+    \item \textbf{Entrenamiento (70\%)}: Para ajustar los modelos.
+    \item \textbf{Prueba (30\%)}: Para evaluar el desempeño predictivo.
+\end{itemize}
+
+Se compararon distintos modelos para predecir el **logaritmo del salario por hora (log\_hourly\_wage)** en función de variables como edad, educación, género, formalidad laboral y horas trabajadas.
+
+Los modelos evaluados fueron:
+\begin{enumerate}
+    \item \textbf{Regresión Lineal Básica (lm1)}: Incluye edad y edad al cuadrado.
+    \item \textbf{Regresión Lineal Extendida (lm2)}: Agrega género, horas trabajadas, formalidad laboral y nivel educativo.
+    \item \textbf{Modelo con Interacciones (lm3)}: Introduce interacciones entre edad y educación, así como género y formalidad.
+    \item \textbf{Random Forest (rf)}: Modelo de árboles de decisión que captura relaciones no lineales.
+    \item \textbf{Red Neuronal (nn)}: Modelo con una capa oculta de 5 nodos.
+\end{enumerate}
+
+\section{Resultados de Predicción}
+
+Los resultados se evaluaron usando el **Error Cuadrático Medio (RMSE)** en el conjunto de prueba y validación cruzada Leave-One-Out (LOOCV):
+
+\begin{table}[H]
+    \centering
+    \caption{Comparación de modelos predictivos}
+    \begin{tabular}{lcc}
+        \toprule
+        Modelo & RMSE Test & RMSE LOOCV \\
+        \midrule
+        Random Forest (rf) & \textbf{0.4673} & 0.5059 \\
+        Regresión Extendida (lm2) & 0.5146 & 0.5059 \\
+        Modelo con Interacciones (lm3) & 0.5273 & - \\
+        Regresión Lineal (lm1) & 0.6444 & - \\
+        Red Neuronal (nn) & 0.6556 & - \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:rmse_comparison}
+\end{table}
+
+\section{Interpretación de Resultados}
+\begin{itemize}
+    \item \textbf{El modelo con mejor desempeño es Random Forest (rf)}, con el menor error de predicción (RMSE Test = 0.4673). Este modelo supera a la regresión lineal al capturar relaciones no lineales entre las variables.
+    \item \textbf{La regresión extendida (lm2) también muestra un buen desempeño (RMSE = 0.5146)} y es una alternativa si se busca mayor interpretabilidad.
+    \item \textbf{El modelo de Red Neuronal (nn) no mejora la predicción respecto a métodos más simples}, lo que sugiere que su arquitectura actual no es óptima para este problema.
+\end{itemize}
+
+\section{Análisis de Errores de Predicción}
+\begin{itemize}
+    \item Los mayores errores ocurren en individuos con **salarios atípicos** (muy altos o bajos).
+    \item \textbf{Random Forest} predice mejor en rangos medios de ingresos, pero presenta dificultades en valores extremos.
+    \item Los errores pueden deberse a **factores no observados**, como experiencia específica o habilidades blandas no incluidas en el modelo.
+\end{itemize}
+
+\section{Conclusión}
+El análisis muestra que \textbf{Random Forest es el mejor modelo} para predecir ingresos, ya que logra el menor error y captura relaciones no lineales. Sin embargo, si la interpretabilidad es clave, \textbf{la regresión extendida (lm2) sigue siendo una opción válida}.
+
+Para mejorar la precisión, futuras investigaciones podrían explorar:
+\begin{itemize}
+    \item \textbf{Ajuste de hiperparámetros en Random Forest} para mejorar su desempeño.
+    \item \textbf{Modelos avanzados como XGBoost} para optimizar predicciones.
+    \item \textbf{Incorporación de nuevas variables} que reflejen mejor la experiencia y habilidades del trabajador.
+\end{itemize}
+
 \section{Conclusiones}
 [Conclusiones principales]
 
