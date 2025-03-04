@@ -7,21 +7,22 @@ rm(list = ls())  # Elimina todos los objetos del entorno de trabajo para evitar 
 message("Entorno limpio. Ejecutando el script...")
 
 # Cargar paquetes necesarios
-if(!require(pacman)) install.packages("pacman")
+if (!require(pacman)) install.packages("pacman")
 pacman::p_load(rio, tidyverse, lmtest, car, boot, stargazer, gridExtra, ggplot2)
 
 # ========================================================================
 # 1. Cargar datos limpios
 # ========================================================================
 message("Cargando datos procesados...")
-geih_clean <- readRDS("stores/processed/geih_2018_clean.rds")
+geih_filtered_clean <- readRDS("stores/processed/geih_2018_clean.rds")
 
 # ========================================================================
 # 2. Estimación del perfil edad-salario
 # ========================================================================
 message("Estimando el perfil edad-salario...")
 
-age_wage_model <- lm(log(ingtot) ~ age + I(age^2), data = geih_clean, na.action = na.exclude)
+age_wage_model <- lm(log_hourly_wage ~ age + I(age^2), 
+                     data = geih_filtered_clean, na.action = na.exclude)
 
 # Guardar resultados para su uso en el informe
 saveRDS(age_wage_model, "stores/processed/age_wage_model.rds")
@@ -44,7 +45,7 @@ stargazer(age_wage_model,
 message("Realizando prueba de heterocedasticidad...")
 heteroskedasticity_test <- bptest(age_wage_model, 
                                   ~ age + I(age^2) + fitted(age_wage_model)^2, 
-                                  data = geih_clean)
+                                  data = geih_filtered_clean)
 print(heteroskedasticity_test)
 
 # ========================================================================
@@ -54,12 +55,12 @@ message("Realizando bootstrap para intervalos de confianza...")
 
 boot_fn <- function(data, index) {
   sample_data <- data[index, ]
-  model <- lm(log(ingtot) ~ age + I(age^2), data = sample_data)
+  model <- lm(log_hourly_wage ~ age + I(age^2), data = sample_data)
   return(coef(model))
 }
 
 set.seed(3589)
-boot_results <- boot(geih_clean, boot_fn, R = 1000)
+boot_results <- boot(geih_filtered_clean, boot_fn, R = 1000)
 
 beta1 <- boot_results$t[, 2]  # Coeficiente de age
 beta2 <- boot_results$t[, 3]  # Coeficiente de age^2
@@ -84,8 +85,8 @@ message(paste("Edad máxima estimada:", round(edad_maxima_media, 2),
 # ========================================================================
 message("Creando visualización del perfil edad-salario...")
 
-edad_seq <- seq(min(geih_clean$age, na.rm = TRUE), 
-                max(geih_clean$age, na.rm = TRUE), 
+edad_seq <- seq(min(geih_filtered_clean$age, na.rm = TRUE), 
+                max(geih_filtered_clean$age, na.rm = TRUE), 
                 length.out = 100)
 
 nuevo_df <- data.frame(age = edad_seq)
@@ -98,7 +99,7 @@ pred_df <- data.frame(
   upr = predicciones[, "upr"]
 )
 
-age_wage_plot <- ggplot(data = geih_clean, aes(x = age, y = log(ingtot))) +
+age_wage_plot <- ggplot(data = geih_filtered_clean, aes(x = age, y = log_hourly_wage)) +
   geom_point(size = 0.8, alpha = 0.3, color = "grey50") +
   geom_line(data = pred_df, aes(x = age, y = fit), color = "black", size = 1) +
   geom_ribbon(data = pred_df, aes(x = age, ymin = lwr, ymax = upr), 
