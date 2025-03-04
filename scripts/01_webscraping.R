@@ -21,8 +21,24 @@ pacman::p_load(
   readr,      # Para lectura/escritura de archivos
   dplyr,      # Para manipulación de datos
   glue,       # Para interpolación de cadenas
-  purrr       # Para programación funcional
-)
+  purrr,      # Para programación funcional
+  rstudioapi, # Para obtener la ruta del script y configurar el directorio de trabajo
+  rio,        # Para importar y exportar datos
+  tidyverse,  # Conjunto de paquetes para manipulación y visualización de datos
+  skimr,      # Para exploración de datos
+  visdat,     # Para visualización de datos faltantes
+  car,        # Para regresión y estadísticas
+  lmtest,     # Para pruebas econométricas
+  boot,       # Para bootstrap
+  stargazer,  # Para exportar tablas de regresión
+  ggplot2,    # Para visualización de datos
+  gridExtra,  # Para organizar gráficos
+  caret,      # Para machine learning y validación cruzada
+  randomForest, # Para modelos de Random Forest
+  glmnet,     # Para regresión Ridge y Lasso
+  jsonlite,   # Para manejar formato JSON
+  nnet,       # Para redes neuronales
+  rpart       # Para árboles de decisión
 
 # Configuración inicial
 # ---------------------
